@@ -47,6 +47,7 @@
 			width: 100%;
 			height: auto;
 			transition: all 0.5s ease;
+			cursor: pointer;
 		}
 
 		.pg-item img:hover {
@@ -79,6 +80,30 @@
 			right: 0;
 			background-image: linear-gradient(to left, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, .0001) 100%);
 		}
+
+		#pg-overlay {
+			opacity: 0;
+			z-index: -1;
+			left: 0;
+			top: 0;
+			position: fixed;
+			background-color: rgba(0, 0, 0, 0.5);
+			width: 100vw;
+			height: 100vh;
+		}
+
+		#pg-popup {
+			height: 80%;
+			position: absolute;
+		  	left: 50%;
+		  	top: 50%;
+		  	transform: translate(-50%, -50%);
+		}
+
+		#pg-popup img {
+			height: 100%;
+		}
+
 	</style>
 </head>
 
@@ -121,15 +146,22 @@
 		<div id="right" class="pg-control"><span class="glyphicon glyphicon-chevron-right"></span></div>
 	</div>
 
+	<div id="pg-overlay">
+		<div id="pg-popup">
+			<img src="">
+		</div>
+	</div>
+	
+
 	<script type="text/javascript">
 		$(window).load(function() {
 			var frame = $('#photo-gallery');
 			var pgWrapper = $('#pg-wrapper');
-			var pgItem = $('.pg-item:first-child');
+			var pgItem = $('.pg-item');
 
 			var frameSize = parseInt(frame.css('width').replace(/[^-\d\.]/g, ''))
 			var posLeft = parseInt(pgWrapper.css('left').replace(/[^-\d\.]/g, ''));
-			var move = parseInt(pgItem.css('width').replace(/[^-\d\.]/g, '')) + 2;
+			var move = parseInt($(pgItem[0]).css('width').replace(/[^-\d\.]/g, '')) + 2;
 
 			$('.pg-control#left').click(function() {
 				if(posLeft <= frameSize) {
@@ -152,6 +184,29 @@
 					}, 600, function() {
     					// Animation complete.
   					});
+				}
+			});
+
+			var pgOverlay = $('#pg-overlay');
+
+			pgItem.click(function() {
+				var imgSrc = $(this).find('img').attr('src');
+				$(pgOverlay).find('img').attr('src', imgSrc);
+				pgOverlay.css('zIndex', '1');
+				pgOverlay.animate({
+  						opacity: 1
+				}, 500, function() {
+    					// Animation complete.
+  				});
+			});
+
+			pgOverlay.click(function(e) {
+				if(e.target == this) {
+					$(this).animate({
+	  						opacity: 0
+					}, 500, function() {
+						$(this).css('zIndex', '-1');
+	  				});
 				}
 			});
 		});
